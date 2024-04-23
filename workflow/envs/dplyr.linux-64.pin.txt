@@ -369,7 +369,7 @@ https://conda.anaconda.org/conda-forge/noarch/notebook-7.1.3-pyhd8ed1ab_0.conda#
 https://conda.anaconda.org/conda-forge/noarch/r-cellranger-1.1.0-r43hc72bb7e_1006.conda#10e112086717b77f8ce2bb18fd9bf13f
 https://conda.anaconda.org/conda-forge/linux-64/r-dplyr-1.1.4-r43ha503ecb_0.conda#7ca8b417326d45b2e4bbf7429a0f1a7b
 https://conda.anaconda.org/conda-forge/noarch/r-forcats-1.0.0-r43hc72bb7e_1.conda#9adaad649e10d95039e2bf3d420936ec
-https://conda.anaconda.org/conda-forge/noarch/r-ggplot2-3.5.0-r43hc72bb7e_0.conda#f5fc39155735cfc3c0c680620301dfa8
+https://conda.anaconda.org/conda-forge/noarch/r-ggplot2-3.5.1-r43hc72bb7e_0.conda#efb6b27dba202d74e5f182faae28794a
 https://conda.anaconda.org/conda-forge/noarch/r-googledrive-2.1.1-r43hc72bb7e_1.conda#d9210dab882da3bff6327c5b90e7abcf
 https://conda.anaconda.org/conda-forge/noarch/r-hardhat-1.3.1-r43hc72bb7e_0.conda#9abb301b7c46be6b4de209d3ffe8b682
 https://conda.anaconda.org/conda-forge/noarch/r-irdisplay-1.1-r43hd8ed1ab_2.conda#034f034b46d37799cb217e283f60b549

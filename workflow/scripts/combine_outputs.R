@@ -1,5 +1,6 @@
 # Get list of files from command line
 library(dplyr)
+library(tidyr)
 run <- function(infiles, outfile){
     # Read all TSV files into dataframes and combine them
     samples_names <- gsub(".tsv", "", basename(infiles))
@@ -24,6 +25,15 @@ run <- function(infiles, outfile){
         x
     }
     combined_df[samples_names] <- lapply(combined_df[samples_names], replace_na)
+
+    # If lineage column is present, split it into multiple columns
+    if ("lineage" %in% colnames(combined_df)) {
+        ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
+
+        combined_df <- combined_df %>%
+            separate(lineage, into = ranks, sep = ";", fill = "right", remove = TRUE, extra = "merge")
+    }
+
     # Write combined dataframe to file
     write.table(combined_df, outfile, sep = "\t", row.names = FALSE)
 }

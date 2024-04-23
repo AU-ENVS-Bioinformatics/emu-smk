@@ -5,3 +5,4 @@ channels:
 dependencies:
   - conda-forge::r-dplyr=1.1.4
   - r-essentials
+  - conda-forge::r-tidyr
