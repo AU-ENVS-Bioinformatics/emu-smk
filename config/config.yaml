@@ -1,11 +1,14 @@
-# Directory with the reads in .fastq
-reads_dir: "reads_directory/"
-# Metadata csv file with at least the columns sample_id,sample_name
-metadata_tbl: "path_to_metadata_metadata.csv"
-# Emu database directory, it should contain a taxonomy.tsv, 
-# a taxonomy_split.tsv and a species_taxid.fasta
-emu_database: "path_to_desired_database"
-
-# Add here any optional flag to emu
-# emu_abundance:
-#   - "--min-abundance 5"
+# This is the configuration file for the pipeline
+# Input directory is the directory where the fastq/fasta files are located
+# Empty string to use the current directory
+input_directory: "reads/"
+# Extension of the files to be processed
+read_extension: ".fastq"
+# CSV file with the metadata. The first column must contain the sample names (that is, the filename without the extension)
+metadata: "metadata.csv"
+# EMU database directory
+database: "database"
+# Number of threads per sample. It will determine the parallelization of the pipeline
+threads_per_sample: 5
+# Optional flags for the emu abundance command
+emu_abundance_flags: "--type map-ont"

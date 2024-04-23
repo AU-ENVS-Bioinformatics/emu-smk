@@ -9,14 +9,22 @@ A Snakemake workflow for running [EMU](https://gitlab.com/treangenlab/emu).
 
 ## Usage
 
-First, prepare a metadata csv file. You can use this as an [example](.tests/metadata.csv). It can have any arbitrary column, but it needs to have two columns: sample_id,sample_name for identifying the filename and the sample name. Again, see the [tests directory](.tests) for an example. 
+First, prepare a metadata csv file. You can use this as an [example](metadata.csv). At least, it should have one column that will be used as the identifier of every sample. It must match with the name of the file without the extension. 
 
-Then, edit the [configuration file](config/config.yaml) so it fits your case. You can [read more here](config/README.md).
-
-Finally,
+Then, edit the [configuration file](config/config.yaml) so it fits your case. At least, you should indicate (a) the file extension (by default .fastq), (b) the directory where those files are located, (c) the filepath of the metadata CSV  and (d) the filepath of the directory with the EMU database. This repository contains toy examples to ensure the pipeline works, but you want to replace them. 
 
 ```bash
 snakemake --use-conda -n
 snakemake --use-conda -c100
 ```
 
+## Output
+
+The pipeline produces two TSV files containing the abundances and taxonomy and one RDS file with a phyloseq object with the counts, taxa and metadata (from any additional column you add in the metadata CSV) that you can read into Rstudio to start analyzing your data. These files will be produces in the "results" directory.  
+
+Optionally, you can keep additional files per sample (such as the alignments and a fasta of every unclassified sequences using the command "--notemp" that, unintuitively, means keep all temporary files). Those files will be located in the "steps" directory. 
+
+```bash
+snakemake --use-conda -n --notemp
+snakemake --use-conda -c100 --notemp
+```

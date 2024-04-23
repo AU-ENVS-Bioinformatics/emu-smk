@@ -4,68 +4,59 @@ import sys
 
 configfile: "config/config.yaml"
 
+input_directory = config["input_directory"]
+extension = config.get("read_extension", "fastq")
+database = config["database"]
+metadata_file = config["metadata"]
+metadata = pd.read_csv(metadata_file)
+samples_names = metadata.iloc[:, 0].tolist() # first column of metadata are the sample names
+emu_flags = config.get("emu_flags", "")
 
-indir = config.get("reads_dir", "porechopped/")
-samples = pd.read_csv(config.get("metadata_tbl"))
 
-
-include: "common.smk"
-
-rule edit_abundances:
+rule phyloseq:
     input:
-        "results/abundances/emu-combined-tax_id.tsv",
+        abundances="results/counts.tsv",
+        taxonomy="results/taxonomy.tsv",
+        metadata=metadata_file
     output:
-        "results/emu-combined-tax_id_preproc.tsv",
-    conda:
-        "envs/jupyter.yaml"
+        "results/phyloseq.RDS"
     log:
-        notebook="logs/combined_rel-abundance.ipynb"
-    notebook:
-        "notebooks/combine_abundances.py.ipynb"
-
-rule combine_abundances:
-    input:
-        expand(
-            "results/abundances/{name}_rel-abundance.tsv",
-            name=samples["sample_name"].values,
-        ),
-    output:
-        "results/abundances/emu-combined-tax_id.tsv",
-    log:
-        "logs/combine_emu.log"
+        "logs/phyloseq.log"
     conda:
-        "envs/emu.yaml"
-    shell:
-        "emu combine-outputs results/abundances/ tax_id > {log}" 
-
-rule renamed:
-    input:
-        expand(f"{indir}{{ID}}.fastq", ID=samples["sample_id"].values),
-    output:
-        expand(f"results/renamed/{{name}}.fastq", name=samples["sample_name"].values),
-    conda:
-        "envs/jupyter.yaml"
-    log:
-        "logs/renamed.log",
+        "envs/phyloseq.yaml"
     script:
-        "scripts/rename.py"
+        "scripts/phyloseq.R"
 
-
-rule emu_abundance:
+rule combine_outputs_split:
     input:
-        "results/renamed/{name}.fastq",
+        expand("steps/emu_abundances/{sample}.tsv", sample=samples_names)
     output:
-        "results/abundances/{name}_rel-abundance.tsv",
-    params:
-        extra=" ".join(config.get("emu_abundance", "")),
-        db=config.get("emu_database"),
+        abundances = ensure("results/counts.tsv", non_empty=True),
+        taxonomy = ensure("results/taxonomy.tsv", non_empty=True),
     log:
-        "logs/emu_abundance_{name}.log",
+        "logs/emu/combined_split.log",
+    params:
+        rank="tax_id",
+        extra="--counts",
     conda:
         "envs/emu.yaml"
-    threads: min([workflow.cores, 50])
-    shell:
-        "emu abundance {params.extra} "
-        "--output-dir results/abundances --db {params.db} --threads {threads} "
-        "{input} "
-        ">> {log} 2>&1"
+    script:
+        "scripts/emu_combine.py"
+
+rule abundance:
+    input:
+        reads=f"{input_directory}{{sample}}{extension}",
+        db=f"{database}",
+    output:
+        abundances=temp("steps/emu_abundances/{sample}.tsv"),
+        alignments=temp("steps/emu_abundances/{sample}_emu_alignments.sam"),
+        unclassified= temp("steps/emu_abundances/{sample}_unclassified.fa"),
+    log:
+        "logs/emu/{sample}_abundance.log",
+    params:
+        extra= f"--keep-counts {emu_flags}",
+    threads: config.get("threads_per_sample", 1)
+    conda:
+        "envs/emu.yaml"
+    script:
+        "scripts/emu_abundance.py"
