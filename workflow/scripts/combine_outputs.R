@@ -17,7 +17,7 @@ run <- function(infiles, outfile){
 
     #  Combine all dataframes into one using left_join with all columns that are not samples_names as keys
     taxa_cols <- setdiff(colnames(dfs[[1]]), samples_names)
-    combined_df <- do.call(\(x, y) dplyr::full_join(x, y, by = taxa_cols), dfs)
+    combined_df <- Reduce(\(x, y) dplyr::full_join(x, y, by = taxa_cols), dfs)
     # Replace NA with 0 for every column in samples_names
     replace_na <- function(x) {
         x[is.na(x)] <- 0
