@@ -37,8 +37,8 @@ rule combine_outputs_split:
         "logs/emu/combined_split.log",
     conda:
         "envs/dplyr.yaml"
-    shell:
-        "Rscript --vanilla workflow/scripts/combine_outputs.R {input} {output} 2>&1 | tee {log}"
+    script:
+        "scripts/combine_outputs.R"
 
 rule abundance:
     input:
