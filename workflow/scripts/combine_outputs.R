@@ -18,13 +18,23 @@ run <- function(infiles, outfile, ranks){
 
     #  Combine all dataframes into one using left_join with all columns that are not samples_names as keys
     taxa_cols <- setdiff(colnames(dfs[[1]]), samples_names)
-    combined_df <- Reduce(\(x, y) dplyr::full_join(x, y, by = taxa_cols), dfs)
+    combined_df <- Reduce(\(x, y) dplyr::full_join(x, y, by = taxa_cols), dfs) %>%
+        mutate(across(all_of(taxa_cols), as.character)) %>%
+        mutate(across(all_of(taxa_cols), ~na_if(., "")))
     # Replace NA with 0 for every column in samples_names
     replace_na <- function(x) {
         x[is.na(x)] <- 0
         x
     }
     combined_df[samples_names] <- lapply(combined_df[samples_names], replace_na)
+
+    combined_df <- combined_df %>%
+        group_by(across(all_of(taxa_cols))) %>%
+        summarise(across(all_of(samples_names), \(x) sum(x, na.rm = TRUE))) %>%
+        ungroup()
+
+    rownames(combined_df) <- make.unique(rownames(combined_df))
+
 
     # If lineage column is present, split it into multiple columns
     if ("lineage" %in% colnames(combined_df)) {
