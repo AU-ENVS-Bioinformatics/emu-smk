@@ -30,7 +30,9 @@ with tempfile.TemporaryDirectory() as tmpdir:
         if not temp_basename.endswith("_rel-abundance.tsv"):
             temp_basename = os.path.splitext(temp_basename)[0] + "_rel-abundance.tsv"
         temp = os.path.join(tmpdir, temp_basename)
-        os.link(infile, temp)
+        shell("cp {infile} {temp}")
+        # Sadly, shared filesystem didn't like previous code
+        # os.link(infile, temp)
     shell("emu combine-outputs {tmpdir} {rank} {extra} {log}")
     if split and counts:
         shell("mv {tmpdir}/emu-combined-taxonomy-{rank}.tsv {taxonomy}")
