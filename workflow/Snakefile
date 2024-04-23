@@ -15,11 +15,12 @@ emu_flags = config.get("emu_flags", "")
 
 rule phyloseq:
     input:
-        abundances="results/counts.tsv",
-        taxonomy="results/taxonomy.tsv",
+        otu="results/emu_combined.tsv",
         metadata=metadata_file
     output:
-        "results/phyloseq.RDS"
+        phyloseq="results/phyloseq.RDS",
+        counts = "results/counts.csv",
+        taxonomy = "results/taxonomy.csv",
     log:
         "logs/phyloseq.log"
     conda:
@@ -31,8 +32,7 @@ rule combine_outputs_split:
     input:
         expand("steps/emu_abundances/{sample}.tsv", sample=samples_names)
     output:
-        abundances = ensure("results/counts.tsv", non_empty=True),
-        taxonomy = ensure("results/taxonomy.tsv", non_empty=True),
+        abundances = ensure("results/emu_combined.tsv", non_empty=True),
     log:
         "logs/emu/combined_split.log",
     params:
