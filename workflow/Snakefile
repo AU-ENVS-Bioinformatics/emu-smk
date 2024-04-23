@@ -35,20 +35,17 @@ rule combine_outputs_split:
         abundances = ensure("results/emu_combined.tsv", non_empty=True),
     log:
         "logs/emu/combined_split.log",
-    params:
-        rank="tax_id",
-        extra="--counts",
     conda:
-        "envs/emu.yaml"
-    script:
-        "scripts/emu_combine.py"
+        "envs/dplyr.yaml"
+    shell:
+        "Rscript --vanilla workflow/scripts/combine_outputs.R {input} {output} 2>&1 | tee {log}"
 
 rule abundance:
     input:
         reads=f"{input_directory}{{sample}}{extension}",
         db=f"{database}",
     output:
-        abundances=temp("steps/emu_abundances/{sample}.tsv"),
+        abundances="steps/emu_abundances/{sample}.tsv",
         alignments=temp("steps/emu_abundances/{sample}_emu_alignments.sam"),
         unclassified= temp("steps/emu_abundances/{sample}_unclassified.fa"),
     log:
