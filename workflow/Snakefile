@@ -11,6 +11,7 @@ metadata_file = config["metadata"]
 metadata = pd.read_csv(metadata_file)
 samples_names = metadata.iloc[:, 0].tolist() # first column of metadata are the sample names
 emu_flags = config.get("emu_flags", "")
+ranks = config.get("ranks", ["domain", "phylum", "class", "order", "family", "genus", "species"])
 
 
 rule phyloseq:
@@ -35,6 +36,8 @@ rule combine_outputs_split:
         abundances = ensure("results/emu_combined.tsv", non_empty=True),
     log:
         "logs/emu/combined_split.log",
+    params:
+        ranks = ranks
     conda:
         "envs/dplyr.yaml"
     script:

@@ -1,7 +1,7 @@
 # Get list of files from command line
 library(dplyr)
 library(tidyr)
-run <- function(infiles, outfile){
+run <- function(infiles, outfile, ranks){
     # Read all TSV files into dataframes and combine them
     samples_names <- gsub(".tsv", "", basename(infiles))
     process_file <- function(infile) {
@@ -28,8 +28,6 @@ run <- function(infiles, outfile){
 
     # If lineage column is present, split it into multiple columns
     if ("lineage" %in% colnames(combined_df)) {
-        ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
-
         combined_df <- combined_df %>%
             separate(lineage, into = ranks, sep = ";", fill = "right", remove = TRUE, extra = "merge")
     }
@@ -40,5 +38,6 @@ run <- function(infiles, outfile){
 
 run(
   as.character(snakemake@input), 
-  snakemake@output[[1]]
+  snakemake@output[[1]],
+  ranks = snakemake@params$ranks
 )

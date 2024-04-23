@@ -8,6 +8,10 @@ read_extension: ".fastq"
 metadata: "metadata.csv"
 # EMU database directory
 database: "database"
+
+# Different databases have different ranks. Here, you make it fit your database.
+#ranks = ["superkingdom", "phylum", "class", "order", "family", "genus", "species"]
+
 # Number of threads per sample. It will determine the parallelization of the pipeline
 threads_per_sample: 5
 # Optional flags for the emu abundance command
